@@ -1,0 +1,36 @@
+﻿version: '3.8'
+services:
+    postgres-compose:
+        image: postgres
+        restart: always
+        environment:
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+        logging:
+          options:
+            max-size: 10m
+            max-file: "3"
+        ports:
+          - '5438:5432'
+        volumes: 
+          - ./postgres-data:/var/lib/postgresql/data
+          
+        networks:
+          - postgres_compose_network
+    #-- PGAdmin installation
+    #-- URL to access the service - http://localhost:15432
+    pgadmin-compose:
+        image: dpage/pgadmin4
+        environment:
+          PGADMIN_DEFAULT_EMAIL: "postgres@email.com" #-- User of PGAdmin
+          PGADMIN_DEFAULT_PASSWORD: "postgres" #-- Password of PGAdmin
+        ports:
+          - "15432:80"
+        depends_on:
+          - postgres-compose
+        networks:
+          - postgres_compose_network
+
+networks: 
+    postgres_compose_network:
+      driver: bridge
